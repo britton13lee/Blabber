@@ -8,4 +8,4 @@ app=Flask(__name__)
   
 @app.route('/greetings', methods=['GET'])
 def greet():
-  return jsonify(['Hello, friend!', 'Top of the morning to ya!', 'Come on in, the water's warm!', 'Welcome, traveler!', 'Cheers!'])
+  return jsonify(['Hello, friend!', 'Top of the morning to ya!', 'Come on in, the water is warm!', 'Welcome, traveler!', 'Cheers!'])
