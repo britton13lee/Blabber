@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+        app:
+                image: python-app
+                working_dir: /app
+                volumes:
+                        - ./:/app
+                environment:
+                        FLASK_ENV: development
+                labels:
+                        - traefik.http.routers.app.rule=PathPrefix(`/api`)
+                        - traefik.http.middlewares.strip-api-prefix.stripprefix.prefixes=/api
+                        - traefik.http.routers.app.middlewares=strip-api-prefix
+                        - traefik.http.services.flask.loadbalancer.server.port=5000
+
+                         
+        frontend:
+                image: vtcs2304s19/blabber-client
+                labels:
+                        - traefik.http.routers.frontend.rule=PathPrefix(`/`)
+
+
+        proxy:
+                image: traefik:v2.1
+                command: --api.insecure=true --providers.docker
+                ports:
+                        - 80:80
+                        - 8080:8080
+                volumes:
+                        - /var/run/docker.sock:/var/run/docker.sock
+
+        tests:
+                image: vtcs2304s19/blabber-api-tests
+                environment:
+                        SERVICE_NAME: app
