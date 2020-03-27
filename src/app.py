@@ -4,7 +4,8 @@ from uuid import uuid4
 
 app=Flask(__name__)
 
-blabs = [{"id": "ASDHF872HF", "postTime": 55555, "author": {"email": "briton.lee", "name": "Britton"}, "message": "My first blab!"}]
+blabs = []
+#{"id": "ASDHF872HF", "postTime": 55555, "author": {"email": "briton.lee", "name": "Britton"}, "message": "My first blab!"}
 
 @app.route('/blabs', methods=['GET'])
 def get_all_blabs():
