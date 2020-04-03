@@ -30,7 +30,15 @@ services:
                 volumes:
                         - /var/run/docker.sock:/var/run/docker.sock
 
+        mongo:
+                image: mongo
+                volumes: 
+                        - mongo-data:/data/db
+
         tests:
                 image: vtcs2304s19/blabber-api-tests
                 environment:
                         SERVICE_NAME: app
+
+volumes:
+        mongo-data:
