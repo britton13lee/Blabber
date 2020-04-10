@@ -8,6 +8,7 @@ services:
                         - ./:/app
                 environment:
                         FLASK_ENV: development
+                        DEBUG_METRICS: "true"
                 labels:
                         - traefik.http.routers.app.rule=PathPrefix(`/api`)
                         - traefik.http.middlewares.strip-api-prefix.stripprefix.prefixes=/api
@@ -35,10 +36,25 @@ services:
                 volumes: 
                         - mongo-data:/data/db
 
-        tests:
-                image: vtcs2304s19/blabber-api-tests
-                environment:
-                        SERVICE_NAME: app
+        prometheus:
+                image: prom/prometheus
+                ports:
+                        - 9090:9090
+                volumes:
+                        - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+        grafana:
+                image: grafana/grafana
+                volumes:
+                        - grafana-storage:/var/lib/grafana
+                ports:
+                        - 3000:3000
+
+        #tests:
+        #        image: vtcs2304s19/blabber-api-tests
+        #        environment:
+        #                SERVICE_NAME: app
 
 volumes:
         mongo-data:
+        grafana-storage:
