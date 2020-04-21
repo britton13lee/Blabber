@@ -3,37 +3,53 @@ version: "3.7"
 services:
         app:
                 image: britton13lee/blabber
-                volumes:
-                        - ./:/app
                 environment:
                         FLASK_ENV: development
                         DEBUG_METRICS: "true"
-                labels:
+                deploy:
+                    replicas: 2
+                    labels:
                         - traefik.http.routers.app.rule=PathPrefix(`/api`)
                         - traefik.http.middlewares.strip-api-prefix.stripprefix.prefixes=/api
                         - traefik.http.routers.app.middlewares=strip-api-prefix
                         - traefik.http.services.flask.loadbalancer.server.port=5000
-
-                         
+                    placement:
+                        constraints:
+                            - "node.role==worker"
+                                      
         frontend:
                 image: vtcs2304s19/blabber-client
-                labels:
+                deploy:
+                    replicas: 2
+                    labels:
                         - traefik.http.routers.frontend.rule=PathPrefix(`/`)
-
-
+                    placement:
+                        constraints:
+                            - "node.role==worker"
+                    
         proxy:
                 image: traefik:v2.1
-                command: --api.insecure=true --providers.docker
+                command: --api.insecure=true --providers.docker --providers.docker.swarmMode=true
                 ports:
                         - 80:80
                         - 8080:8080
                 volumes:
                         - /var/run/docker.sock:/var/run/docker.sock
+                deploy:
+                    placement:
+                        constraints:
+                        - "node.role==manager"
+                      
 
         mongo:
                 image: mongo
                 volumes: 
                         - mongo-data:/data/db
+                deploy:
+                    placement:
+                        constraints:
+                        - "node.role==worker"
+                      
 
         prometheus:
                 image: prom/prometheus
@@ -48,12 +64,6 @@ services:
                         - grafana-storage:/var/lib/grafana
                 ports:
                         - 3000:3000
-
-#        tests:
-#                image: vtcs2304s19/blabber-api-tests
-#                environment:
-#                        SERVICE_NAME: app
-
 volumes:
-        mongo-data:
-        grafana-storage:
+    mongo-data:
+    grafana-storage:
