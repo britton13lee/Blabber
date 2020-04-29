@@ -8,11 +8,14 @@ services:
                 environment:
                         FLASK_ENV: development
                         DEBUG_METRICS: "true"
+                        SETTINGS_FILE: /run/secrets/mongo_settings
                 labels:
                         - traefik.http.routers.app.rule=PathPrefix(`/api`)
                         - traefik.http.middlewares.strip-api-prefix.stripprefix.prefixes=/api
                         - traefik.http.routers.app.middlewares=strip-api-prefix
                         - traefik.http.services.flask.loadbalancer.server.port=5000
+                secrets:
+                        - mongo_settings        
 
                          
         frontend:
@@ -57,3 +60,7 @@ services:
 volumes:
         mongo-data:
         grafana-storage:
+
+secrets:
+        mongo_settings:
+                file: mongo_settings.json                      

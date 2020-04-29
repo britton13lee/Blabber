@@ -6,6 +6,7 @@ services:
                 environment:
                         FLASK_ENV: development
                         DEBUG_METRICS: "true"
+                        SETTINGS_FILE: /run/secrets/mongo_settings
                 deploy:
                     replicas: 2
                     labels:
@@ -16,6 +17,9 @@ services:
                     placement:
                         constraints:
                             - "node.role==worker"
+                secrets:
+                        - mongo_settings
+                          
                                       
         frontend:
                 image: vtcs2304s19/blabber-client
@@ -43,8 +47,6 @@ services:
 
         mongo:
                 image: mongo
-                volumes: 
-                        - mongo-data:/data/db
                 deploy:
                     placement:
                         constraints:
@@ -55,15 +57,7 @@ services:
                 image: prom/prometheus
                 ports:
                         - 9090:9090
-                volumes:
-                        - ./prometheus.yml:/etc/prometheus/prometheus.yml
 
-        grafana:
-                image: grafana/grafana
-                volumes:
-                        - grafana-storage:/var/lib/grafana
-                ports:
-                        - 3000:3000
-volumes:
-    mongo-data:
-    grafana-storage:
+secrets:
+        mongodb_connection_settings:
+                file: mongo_settings.json

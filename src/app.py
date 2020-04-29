@@ -4,12 +4,26 @@ from uuid import uuid4
 import pymongo
 from bson.objectid import ObjectId
 from prometheus_flask_exporter import PrometheusMetrics
+import os
+
+mongo_settings = {
+    "host": "mongo",
+    "port": 27017,
+    "username": None,
+    "password": None
+}
+
+file = os.getenv("SETTINGS_FILE", None)
+if file:
+  mongo_settings.update(json.load(open(file)))
 
 app=Flask(__name__)
 metrics = PrometheusMetrics(app)
 
-mongoClient = pymongo.MongoClient("mongodb://mongo:27017")
+mongoClient = pymongo.MongoClient(**mongo_settings)
 mongoCollection = mongoClient["cs2304"]["blabs"]
+
+
 
 @app.route('/blabs', methods=['GET'])
 def get_all_blabs():
