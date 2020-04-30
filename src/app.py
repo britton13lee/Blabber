@@ -6,24 +6,22 @@ from bson.objectid import ObjectId
 from prometheus_flask_exporter import PrometheusMetrics
 import os
 
-mongo_settings = {
-    "host": "mongo",
-    "port": 27017,
-    "username": None,
-    "password": None
-}
-
 file = os.getenv("SETTINGS_FILE", None)
 if file:
-  mongo_settings.update(json.load(open(file)))
+  mongo_settings = json.loads(open(file).read())
+  if "username" in  mongo_settings and "password" in mongo_settings:
+    uri = "mongodb://%s:%s@%s:%s" % (mongo_settings["username"], mongo_settings["password"], mongo_settings["host"], mongo_settings["port"])
+    mongoClient = pymongo.MongoClient(uri)
+  else:
+    uri = "mongodb://%s:%s" % (mongo_settings["host"], mongo_settings["port"])
+    mongoClient = pymongo.MongoClient(uri)
+else:
+  mongoClient = pymongo.MongoClient("mongodb://mongo:27017")
+
+mongoCollection = mongoClient["cs2304"]["blabs"]
 
 app=Flask(__name__)
 metrics = PrometheusMetrics(app)
-
-mongoClient = pymongo.MongoClient(**mongo_settings)
-mongoCollection = mongoClient["cs2304"]["blabs"]
-
-
 
 @app.route('/blabs', methods=['GET'])
 def get_all_blabs():

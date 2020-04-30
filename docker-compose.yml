@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
         app:
-                image: britton13lee/blabber
+                image: britton13lee/blabber:latest
                 volumes:
                         - ./:/app
                 environment:
@@ -52,10 +52,11 @@ services:
                 ports:
                         - 3000:3000
 
-#        tests:
-#                image: vtcs2304s19/blabber-api-tests
-#                environment:
-#                        SERVICE_NAME: app
+ #       tests:
+ #               image: vtcs2304s19/blabber-api-tests
+ #               environment:
+ #                       SERVICE_NAME: app
+ #                       API_PORT: "5000"
 
 volumes:
         mongo-data:
