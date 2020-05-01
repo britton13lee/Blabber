@@ -73,3 +73,12 @@ def delete(identity):
   #Otherwise, return unsuccessful
   else:
     return make_response(jsonify({"message": "Blab not found."}), 404)
+
+
+@app.route('/status', methods=['GET'])
+def healthcheck():
+  try:
+    mongoClient.server_info()
+    return make_response(jsonify({"message": "Database online."}), 200)
+  except:
+    return make_response(jsonify({"message": "Database offline!!!"}), 503)
